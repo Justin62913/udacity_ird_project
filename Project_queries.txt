@@ -17,20 +17,23 @@ order by count(*) desc
 -- 2. This creates a query for finding the film title, Category and the amount
 -- of times it was rented out.
 
-select *
+select distinct Title,
+       Category,
+       count(Title) over (partition by Title) as Rental_Count
 from (select f.title as Title,
-             c.name as Category,
-             count(r.rental_id) as Rental_Count
+             c.name as Category
     from film f
     join film_category fc on f.film_id = fc.film_id
     join category c on fc.category_id = c.category_id
     join inventory i on f.film_id = i.film_id
     join rental r on i.inventory_id = r.inventory_id
-    group by 1,2
-    order by 2,1 asc
+    group by 1,2,f.film_id,rental_id
+
+
 )sub
 where sub.Category in ('Animation', 'Children', 'Classics', 'Comedy', 'Family',
                       'Music')
+order by 2,1
 
 
 
